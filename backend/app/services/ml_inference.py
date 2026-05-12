@@ -5,6 +5,7 @@ from typing import Any
 
 import joblib
 import numpy as np
+import pandas as pd
 
 from app.core.config import get_settings
 from app.core.logging import logger
@@ -14,9 +15,9 @@ from app.services.feature_extraction import FeatureExtractor
 class HeuristicFallbackModel:
     """Deterministic fallback keeps inference available before first training run."""
 
-    def predict_proba(self, rows: list[list[float]]) -> np.ndarray:
+    def predict_proba(self, rows: Any) -> np.ndarray:
         scores: list[float] = []
-        for row in rows:
+        for row in _as_row_lists(rows):
             url_length, _, _, query_length, entropy, digits, _, hyphens, _, at_symbol, ip_host, https, keywords, *_ = row
             score = 0.08
             score += min(url_length / 220, 0.25)
@@ -32,11 +33,41 @@ class HeuristicFallbackModel:
 
 
 class HeuristicAnomalyModel:
-    def score_samples(self, rows: list[list[float]]) -> np.ndarray:
+    def score_samples(self, rows: Any) -> np.ndarray:
         values = []
-        for row in rows:
+        for row in _as_row_lists(rows):
             values.append(-0.2 - min((row[0] + row[5] + row[13] * 10) / 350, 0.8))
         return np.array(values)
+
+
+def _as_row_lists(rows: Any) -> list[list[float]]:
+    if hasattr(rows, "to_numpy"):
+        return rows.to_numpy(dtype=float).tolist()
+    if isinstance(rows, np.ndarray):
+        return rows.astype(float).tolist()
+    return rows
+
+
+def _model_feature_columns(model: Any) -> list[str] | None:
+    if hasattr(model, "feature_names_in_"):
+        return list(model.feature_names_in_)
+    if hasattr(model, "base_model"):
+        return _model_feature_columns(model.base_model)
+    if hasattr(model, "get_booster"):
+        names = model.get_booster().feature_names
+        return list(names) if names else None
+    return None
+
+
+def _align_feature_frame(frame: pd.DataFrame, model: Any) -> pd.DataFrame:
+    columns = _model_feature_columns(model)
+    if not columns:
+        return frame
+    aligned = frame.copy()
+    for column in columns:
+        if column not in aligned.columns:
+            aligned[column] = 0.0
+    return aligned[columns]
 
 
 class MLInferenceEngine:
@@ -64,10 +95,12 @@ class MLInferenceEngine:
 
     def predict(self, event: dict[str, Any]) -> dict[str, Any]:
         features = self.extractor.extract(event)
-        vector = [self.extractor.vectorize(features)]
-        proba = self.phishing_model.predict_proba(vector)[0]
+        feature_frame = self.extractor.to_frame(features)
+        phishing_frame = _align_feature_frame(feature_frame, self.phishing_model)
+        anomaly_frame = _align_feature_frame(feature_frame, self.anomaly_model)
+        proba = self.phishing_model.predict_proba(phishing_frame)[0]
         phishing_probability = float(proba[1])
-        raw_anomaly = float(self.anomaly_model.score_samples(vector)[0])
+        raw_anomaly = float(self.anomaly_model.score_samples(anomaly_frame)[0])
         anomaly_score = max(0.0, min(1.0, abs(raw_anomaly)))
         return {
             "model_name": "xgboost_phishing+isolation_forest",
@@ -75,4 +108,3 @@ class MLInferenceEngine:
             "anomaly_score": anomaly_score,
             "features": features,
         }
-

@@ -51,14 +51,32 @@ $env:PYTHONPATH="$PWD\backend;$PWD"
 .\scripts\train_models.ps1
 ```
 
+The included `datasets/phishing_urls_seed.csv` file has only 20 rows and is smoke-test-only. For meaningful local metrics, train with the PhiUSIIL URL dataset:
+
+```powershell
+py -3.11 -m ml.training.train --dataset datasets/phiusiil_phishing_urls.csv --model-dir ml/models --metrics ml/models/metrics.json
+```
+
 Or inside Docker:
 
 ```powershell
-docker compose exec backend python -m ml.training.train --dataset datasets/phishing_urls_seed.csv --model-dir ml/models --metrics ml/models/metrics.json
+docker compose exec backend python -m ml.training.train --dataset datasets/phiusiil_phishing_urls.csv --model-dir ml/models --metrics ml/models/metrics.json
 docker compose restart backend stream-processor
 ```
 
-The included 20-row seed dataset is for smoke testing only. Download real feeds before claiming stronger metrics:
+PhiUSIIL uses `URL` as the input URL column and `label` as the source label. SHANK converts PhiUSIIL labels so source `label = 0` becomes phishing target `1`, and source `label = 1` becomes benign target `0`. This preserves `/api/v1/predict-url` semantics: higher `phishing_probability` means higher phishing risk. Training intentionally ignores PhiUSIIL precomputed feature columns and regenerates SHANK runtime features from each URL.
+
+After training, inspect `ml/models/metrics.json` for accuracy, precision, recall, F1, ROC-AUC, confusion matrix, false positives, false negatives, the feature list, dataset metadata, and any quality warnings. Treat unusually perfect metrics as a prompt to review data leakage or duplicate URLs, not as an automatic production claim.
+
+Run the manual real-world validation set after training:
+
+```powershell
+py -3.11 scripts/evaluate_manual_urls.py
+```
+
+This writes `ml/models/manual_validation_results.csv` and `ml/models/manual_validation_summary.json`. The trainer also includes manual validation metrics in `metrics.json` when `datasets/manual_validation_urls.csv` exists. Manual validation is a small calibration/guardrail set, not proof of production readiness.
+
+You can still download external feeds for experimentation:
 
 ```powershell
 $env:PYTHONPATH="$PWD\backend;$PWD"

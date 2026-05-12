@@ -1,0 +1,41 @@
+url,expected_label,notes
+https://www.google.com,0,well-known benign
+https://www.microsoft.com/en-us/security,0,well-known benign security page
+https://www.cloudflare.com/learning/security/,0,well-known benign security page
+https://github.com,0,well-known benign
+https://stackoverflow.com,0,well-known benign
+https://www.apple.com,0,well-known benign
+https://www.amazon.com,0,well-known benign
+https://www.wikipedia.org,0,well-known benign
+https://www.python.org,0,well-known benign
+https://www.mozilla.org,0,well-known benign
+https://www.linkedin.com,0,well-known benign
+https://www.reddit.com,0,well-known benign
+https://www.npmjs.com,0,well-known benign
+https://pypi.org,0,well-known benign
+https://docs.docker.com,0,well-known benign documentation
+https://kubernetes.io,0,well-known benign documentation
+https://fastapi.tiangolo.com,0,well-known benign documentation
+https://www.postgresql.org,0,well-known benign
+https://redis.io,0,well-known benign
+https://www.virustotal.com,0,well-known benign security service
+http://secure-login-paypa1.example.info/update-billing,1,synthetic phishing-style URL on safe example domain
+http://login-microsoftonline-security-check.example.ru/verify/account/password-reset,1,synthetic phishing-style URL on safe example domain
+http://appleid-verify-account.example.com/session/login,1,synthetic phishing-style URL on safe example domain
+http://bankofamerica-secure-update.example.net/account/verify,1,synthetic phishing-style URL on safe example domain
+http://signin-google-security-alert.example.org/password/reset,1,synthetic phishing-style URL on safe example domain
+http://paypal-confirm-wallet.example.info/login/verify,1,synthetic phishing-style URL on safe example domain
+http://github-security-oauth.example.net/session/confirm,1,synthetic phishing-style URL on safe example domain
+http://amazon-prime-billing-update.example.org/account,1,synthetic phishing-style URL on safe example domain
+http://linkedin-account-limited.example.com/verify,1,synthetic phishing-style URL on safe example domain
+http://cloudflare-support-ticket.example.info/login,1,synthetic phishing-style URL on safe example domain
+http://apple-support-password.example.ru/reset,1,synthetic phishing-style URL on safe example domain
+http://google-drive-shared-document.example.net/secure/login,1,synthetic phishing-style URL on safe example domain
+http://microsoft-office365-alert.example.org/account/verify,1,synthetic phishing-style URL on safe example domain
+http://bank-secure-message.example.com/login?id=834839,1,synthetic phishing-style URL on safe example domain
+http://wallet-confirm-seed-phrase.example.info/recover,1,synthetic phishing-style URL on safe example domain
+http://urgent-invoice-payment.example.net/download,1,synthetic phishing-style URL on safe example domain
+http://reddit-premium-security.example.org/password,1,synthetic phishing-style URL on safe example domain
+http://npmjs-package-security-check.example.com/verify,1,synthetic phishing-style URL on safe example domain
+http://pypi-account-token-reset.example.info/login,1,synthetic phishing-style URL on safe example domain
+http://virustotal-api-key-confirm.example.ru/account,1,synthetic phishing-style URL on safe example domain

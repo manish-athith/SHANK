@@ -1,11 +1,48 @@
 {
-  "accuracy": 0.8,
-  "precision": 0.6667,
-  "recall": 1.0,
-  "f1": 0.8,
-  "roc_auc": 1.0,
-  "dataset_rows": 20,
-  "dataset_note": "Seed data is for smoke testing only; use real feeds before claiming model quality.",
+  "accuracy": 0.9977,
+  "precision": 0.9992,
+  "recall": 0.9953,
+  "f1": 0.9972,
+  "roc_auc": 0.9988,
+  "confusion_matrix": [
+    [
+      33694,
+      19
+    ],
+    [
+      119,
+      25011
+    ]
+  ],
+  "false_positive_count": 19,
+  "false_negative_count": 119,
+  "classification_report": {
+    "benign": {
+      "precision": 0.9964806435394671,
+      "recall": 0.9994364191854774,
+      "f1-score": 0.9979563427420549,
+      "support": 33713.0
+    },
+    "phishing": {
+      "precision": 0.9992409109069117,
+      "recall": 0.9952646239554318,
+      "f1-score": 0.9972488038277512,
+      "support": 25130.0
+    },
+    "accuracy": 0.997654776269055,
+    "macro avg": {
+      "precision": 0.9978607772231893,
+      "recall": 0.9973505215704546,
+      "f1-score": 0.997602573284903,
+      "support": 58843.0
+    },
+    "weighted avg": {
+      "precision": 0.997659467170891,
+      "recall": 0.997654776269055,
+      "f1-score": 0.997654175059978,
+      "support": 58843.0
+    }
+  },
   "features": [
     "url_length",
     "hostname_length",
@@ -22,9 +59,73 @@
     "suspicious_keyword_count",
     "query_param_count",
     "subdomain_count",
+    "registered_domain_length",
+    "tld_length",
+    "suspicious_tld",
+    "brand_keyword_count",
+    "domain_contains_brand_keyword",
+    "brand_keyword_not_in_registered_domain",
+    "known_brand_registered_domain",
+    "brand_in_subdomain",
+    "hostname_is_registered_domain",
+    "known_url_shortener",
+    "path_token_count",
+    "repeated_separator_count",
+    "has_login_keyword",
+    "has_verify_keyword",
+    "has_account_keyword",
+    "has_password_keyword",
     "spf_pass",
     "dkim_pass",
     "attachment_count",
     "executable_attachment_count"
-  ]
+  ],
+  "dataset_path": "datasets/phiusiil_phishing_urls.csv",
+  "original_rows": 235795,
+  "usable_rows": 235370,
+  "train_rows": 141221,
+  "validation_rows": 35306,
+  "test_rows": 58843,
+  "phishing_rows": 100520,
+  "benign_rows": 134850,
+  "label_mapping": {
+    "source_label_0": 1,
+    "source_label_1": 0,
+    "positive_class": 1
+  },
+  "trained_at": "2026-05-12T19:09:43.226632+00:00",
+  "dataset_note": "PhiUSIIL training uses only the URL column and SHANK runtime feature extractor; precomputed dataset columns are intentionally ignored.",
+  "dataset_type": "phiusiil",
+  "calibration_method": "feature_aware_logistic_validation_split",
+  "calibration_feature_columns": [
+    "query_length",
+    "suspicious_keyword_count",
+    "suspicious_tld",
+    "brand_keyword_not_in_registered_domain",
+    "known_brand_registered_domain",
+    "brand_in_subdomain",
+    "hostname_is_registered_domain",
+    "path_token_count",
+    "has_login_keyword",
+    "has_verify_keyword",
+    "has_account_keyword",
+    "has_password_keyword"
+  ],
+  "manual_calibration_weight": 250.0,
+  "probability_threshold": 0.28,
+  "chosen_alert_threshold": 70,
+  "manual_validation": {
+    "total": 40,
+    "benign_total": 20,
+    "phishing_total": 20,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "false_positive_count": 0,
+    "false_negative_count": 0,
+    "false_positives": [],
+    "false_negatives": []
+  },
+  "warnings": []
 }

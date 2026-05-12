@@ -17,3 +17,14 @@ postgres_data/
 redis_data/
 *.log
 
+# Large external datasets
+datasets/phiusiil_phishing_urls.csv
+datasets/phishing_urls_training.csv
+datasets/downloaded/
+
+# Generated validation outputs
+ml/models/manual_validation_results.csv
+ml/models/manual_validation_summary.json
+
+# Trained binary model artifacts
+ml/models/*.joblib
