@@ -1,0 +1,30 @@
+{
+  "accuracy": 0.8,
+  "precision": 0.6667,
+  "recall": 1.0,
+  "f1": 0.8,
+  "roc_auc": 1.0,
+  "dataset_rows": 20,
+  "dataset_note": "Seed data is for smoke testing only; use real feeds before claiming model quality.",
+  "features": [
+    "url_length",
+    "hostname_length",
+    "path_length",
+    "query_length",
+    "entropy",
+    "digit_count",
+    "dot_count",
+    "hyphen_count",
+    "slash_count",
+    "at_symbol",
+    "ip_hostname",
+    "https",
+    "suspicious_keyword_count",
+    "query_param_count",
+    "subdomain_count",
+    "spf_pass",
+    "dkim_pass",
+    "attachment_count",
+    "executable_attachment_count"
+  ]
+}
