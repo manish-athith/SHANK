@@ -85,6 +85,21 @@ python -m ml.training.train --dataset datasets/phishing_urls_training.csv --mode
 python scripts/ingest_threat_feeds.py
 ```
 
+## Pretrained Model Artifacts
+
+Pretrained SHANK model artifacts are available in the GitHub release:
+
+https://github.com/manish-athith/SHANK/releases/tag/models-phiusiil-v1
+
+Download these files into `ml/models/` if you want to run SHANK without retraining:
+
+- `phishing_xgb.joblib`
+- `anomaly_iforest.joblib`
+- `metrics.json`
+- `manual_validation_summary.json`
+
+These artifacts are trained on runtime-compatible URL features using the PhiUSIIL dataset and calibrated with a small manual validation guardrail set. They are intended for local demo and research validation, not production security guarantees.
+
 ## API
 
 Authenticate with `/api/v1/auth/login`, then call:
