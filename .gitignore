@@ -28,3 +28,6 @@ ml/models/manual_validation_summary.json
 
 # Trained binary model artifacts
 ml/models/*.joblib
+
+ml/models/manual_holdout_results.csv
+ml/models/manual_holdout_summary.json
