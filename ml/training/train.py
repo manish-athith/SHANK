@@ -70,18 +70,31 @@ PHIUSIIL_NOTE = (
 CALIBRATION_FEATURE_COLUMNS = [
     "query_length",
     "suspicious_keyword_count",
+    "suspicious_path_keyword_count",
     "suspicious_tld",
     "brand_keyword_not_in_registered_domain",
     "known_brand_registered_domain",
+    "is_known_legitimate_registered_domain",
+    "brand_in_registered_domain",
     "brand_in_subdomain",
+    "brand_in_path",
+    "brand_impersonation_score",
     "hostname_is_registered_domain",
     "path_token_count",
+    "domain_token_count",
+    "domain_entropy",
+    "path_entropy",
+    "credential_keyword_count",
+    "ecommerce_keyword_count",
+    "financial_keyword_count",
+    "punycode_detected",
+    "url_shortener_detected",
     "has_login_keyword",
     "has_verify_keyword",
     "has_account_keyword",
     "has_password_keyword",
 ]
-MANUAL_CALIBRATION_WEIGHT = 250.0
+MANUAL_CALIBRATION_WEIGHT = 900.0
 
 
 def detect_dataset_spec(path: Path) -> DatasetSpec:
@@ -193,7 +206,9 @@ def _build_classifier() -> Any:
 
 
 def _load_manual_calibration_frame(extractor: FeatureExtractor) -> tuple[pd.DataFrame, pd.Series] | None:
-    manual_path = ROOT_DIR / "datasets" / "manual_validation_urls.csv"
+    manual_path = ROOT_DIR / "datasets" / "calibration_guardrail_urls.csv"
+    if not manual_path.exists():
+        manual_path = ROOT_DIR / "datasets" / "manual_validation_urls.csv"
     if not manual_path.exists():
         return None
     from scripts.evaluate_manual_urls import load_manual_validation
@@ -304,7 +319,7 @@ def _evaluate_manual_validation(
         phishing_probability = float(classifier.predict_proba(feature_frame)[0][1])
         raw_anomaly = float(anomaly.score_samples(feature_frame)[0])
         anomaly_score = max(0.0, min(1.0, abs(raw_anomaly)))
-        risk_result = risk.score(phishing_probability, anomaly_score)
+        risk_result = risk.score(phishing_probability, anomaly_score, features=features)
         predicted_label = int(risk_result.risk_score >= settings.risk_alert_threshold)
         rows.append(
             {
@@ -324,6 +339,8 @@ def _evaluate_manual_validation(
     y_pred = results["predicted_label"].astype(int)
     false_positives = results.loc[(y_true == 0) & (y_pred == 1)].to_dict(orient="records")
     false_negatives = results.loc[(y_true == 1) & (y_pred == 0)].to_dict(orient="records")
+    high_risk_benign = results.loc[(y_true == 0) & (results["severity"].isin(["high", "critical"]))]
+    critical_risk_benign = results.loc[(y_true == 0) & (results["severity"] == "critical")]
     return {
         "total": int(len(results)),
         "benign_total": int((y_true == 0).sum()),
@@ -336,6 +353,10 @@ def _evaluate_manual_validation(
         "false_negative_count": int(len(false_negatives)),
         "false_positives": false_positives,
         "false_negatives": false_negatives,
+        "high_risk_benign_count": int(len(high_risk_benign)),
+        "critical_risk_benign_count": int(len(critical_risk_benign)),
+        "saturated_high_probability_count": int((results["phishing_probability"] >= 0.99).sum()),
+        "saturated_low_probability_count": int((results["phishing_probability"] <= 0.01).sum()),
     }
 
 
@@ -392,16 +413,36 @@ def train(dataset: Path, model_dir: Path, metrics_path: Path) -> dict[str, Any]:
         zero_division=0,
     )
     warnings = _quality_warnings(usable_rows, class_counts, roc_auc)
+    saturated_high = int((probabilities >= 0.99).sum())
+    saturated_low = int((probabilities <= 0.01).sum())
+    if saturated_high / len(probabilities) > 0.50:
+        warnings.append("More than 50% of test probabilities are >= 0.99; calibration may be overconfident.")
+    if saturated_low / len(probabilities) > 0.50:
+        warnings.append("More than 50% of test probabilities are <= 0.01; calibration may be overconfident.")
     settings = get_settings()
-    manual_validation = _evaluate_manual_validation(
-        ROOT_DIR / "datasets" / "manual_validation_urls.csv",
+    calibration_guardrail = _evaluate_manual_validation(
+        ROOT_DIR / "datasets" / "calibration_guardrail_urls.csv"
+        if (ROOT_DIR / "datasets" / "calibration_guardrail_urls.csv").exists()
+        else ROOT_DIR / "datasets" / "manual_validation_urls.csv",
         classifier,
         anomaly,
         extractor,
     )
-    if manual_validation and manual_validation["false_positive_count"]:
+    manual_holdout = _evaluate_manual_validation(
+        ROOT_DIR / "datasets" / "manual_holdout_urls.csv",
+        classifier,
+        anomaly,
+        extractor,
+    )
+    if calibration_guardrail and calibration_guardrail["false_positive_count"]:
         warnings.append(
-            f"Manual validation has {manual_validation['false_positive_count']} false positives."
+            f"Calibration guardrail has {calibration_guardrail['false_positive_count']} false positives."
+        )
+    if manual_holdout and manual_holdout["false_positive_count"]:
+        warnings.append(f"Independent manual holdout has {manual_holdout['false_positive_count']} false positives.")
+    if manual_holdout and manual_holdout["high_risk_benign_count"]:
+        warnings.append(
+            f"Independent manual holdout has {manual_holdout['high_risk_benign_count']} high-risk benign URLs."
         )
 
     metrics: dict[str, Any] = {
@@ -413,6 +454,8 @@ def train(dataset: Path, model_dir: Path, metrics_path: Path) -> dict[str, Any]:
         "confusion_matrix": matrix.astype(int).tolist(),
         "false_positive_count": int(matrix[0][1]),
         "false_negative_count": int(matrix[1][0]),
+        "saturated_high_probability_count": saturated_high,
+        "saturated_low_probability_count": saturated_low,
         "classification_report": report,
         "features": extractor.feature_order,
         "dataset_path": str(dataset),
@@ -432,7 +475,9 @@ def train(dataset: Path, model_dir: Path, metrics_path: Path) -> dict[str, Any]:
         "manual_calibration_weight": MANUAL_CALIBRATION_WEIGHT,
         "probability_threshold": probability_threshold,
         "chosen_alert_threshold": settings.risk_alert_threshold,
-        "manual_validation": manual_validation,
+        "manual_validation": calibration_guardrail,
+        "calibration_guardrail": calibration_guardrail,
+        "independent_manual_holdout": manual_holdout,
         "warnings": warnings,
     }
 

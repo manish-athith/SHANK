@@ -68,13 +68,20 @@ PhiUSIIL uses `URL` as the input URL column and `label` as the source label. SHA
 
 After training, inspect `ml/models/metrics.json` for accuracy, precision, recall, F1, ROC-AUC, confusion matrix, false positives, false negatives, the feature list, dataset metadata, and any quality warnings. Treat unusually perfect metrics as a prompt to review data leakage or duplicate URLs, not as an automatic production claim.
 
-Run the manual real-world validation set after training:
+Run the manual validation sets after training:
 
 ```powershell
 py -3.11 scripts/evaluate_manual_urls.py
 ```
 
-This writes `ml/models/manual_validation_results.csv` and `ml/models/manual_validation_summary.json`. The trainer also includes manual validation metrics in `metrics.json` when `datasets/manual_validation_urls.csv` exists. Manual validation is a small calibration/guardrail set, not proof of production readiness.
+This writes:
+
+- `ml/models/manual_validation_results.csv` and `manual_validation_summary.json` for the calibration guardrail set.
+- `ml/models/manual_holdout_results.csv` and `manual_holdout_summary.json` for the independent holdout set.
+
+Training metrics measure the PhiUSIIL train/test split. The calibration guardrail helps reduce obvious real-world URL false positives. The independent holdout is the closest local regression check for real-world benign URLs and synthetic impersonation URLs that were not used for calibration. SHANK is still URL-feature-only; these artifacts are demo/research artifacts and are not production proof.
+
+The dashboard renders backend timestamps in browser-local time. Older backend timestamps that omit a timezone are treated as UTC before display.
 
 You can still download external feeds for experimentation:
 

@@ -25,3 +25,23 @@ def test_url_features_capture_phishing_signals():
 def test_entropy_is_positive_for_non_empty_value():
     assert shannon_entropy("abc123") > 0
 
+
+def test_legitimate_registered_brand_domain_features():
+    features = FeatureExtractor().extract({"url": "https://www.paypal.com/in/home"})
+
+    assert features["is_known_legitimate_registered_domain"] == 1.0
+    assert features["brand_in_registered_domain"] == 1.0
+    assert features["brand_keyword_not_in_registered_domain"] == 0.0
+    assert features["brand_impersonation_score"] == 0.0
+
+
+def test_fake_brand_impersonation_features():
+    features = FeatureExtractor().extract(
+        {"url": "http://paypal-login-security-check.example.com/update-password"}
+    )
+
+    assert features["is_known_legitimate_registered_domain"] == 0.0
+    assert features["brand_keyword_not_in_registered_domain"] == 1.0
+    assert features["brand_in_subdomain"] == 1.0
+    assert features["brand_impersonation_score"] >= 2.0
+    assert features["credential_keyword_count"] >= 2.0

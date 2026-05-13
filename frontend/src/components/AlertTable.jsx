@@ -1,4 +1,5 @@
 import { ShieldAlert } from 'lucide-react';
+import { formatLocalDateTime } from '../lib/datetime.js';
 
 function severityClass(severity) {
   return {
@@ -45,7 +46,7 @@ export function AlertTable({ alerts, filter }) {
               </td>
               <td className="px-4 py-3 text-slate-200">{alert.risk_score}</td>
               <td className="px-4 py-3 text-sm text-slate-400">
-                {new Date(alert.created_at).toLocaleString()}
+                {formatLocalDateTime(alert.created_at)}
               </td>
             </tr>
           ))}
@@ -61,4 +62,3 @@ export function AlertTable({ alerts, filter }) {
     </div>
   );
 }
-

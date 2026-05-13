@@ -29,26 +29,50 @@ BRAND_KEYWORDS = {
     "adobe",
     "amazon",
     "apple",
+    "axisbank",
     "bankofamerica",
     "cloudflare",
+    "crowdstrike",
+    "datadog",
+    "datadoghq",
     "docker",
     "dropbox",
+    "elastic",
     "facebook",
     "fastapi",
+    "flipkart",
     "github",
     "google",
+    "hdfcbank",
+    "ibm",
+    "icicibank",
+    "intel",
     "linkedin",
     "microsoft",
     "microsoftonline",
+    "myntra",
+    "nvidia",
     "mozilla",
     "netflix",
     "npmjs",
+    "okta",
+    "oracle",
+    "palantir",
     "paypal",
+    "paytm",
+    "phonepe",
     "postgresql",
     "pypi",
+    "razorpay",
     "reddit",
     "redis",
+    "sbi",
+    "salesforce",
+    "splunk",
     "stackoverflow",
+    "swiggy",
+    "zepto",
+    "zomato",
     "virustotal",
     "wikipedia",
 }
@@ -66,24 +90,55 @@ KNOWN_URL_SHORTENERS = {
 }
 
 KNOWN_BRAND_REGISTERED_DOMAINS = {
+    "adobe.com",
     "amazon.com",
+    "amazon.in",
     "apple.com",
+    "axisbank.com",
     "cloudflare.com",
+    "cloudflarestatus.com",
+    "cisco.com",
+    "coursera.org",
+    "crowdstrike.com",
+    "datadoghq.com",
     "docker.com",
+    "elastic.co",
+    "edx.org",
     "fastapi.tiangolo.com",
+    "flipkart.com",
     "github.com",
     "google.com",
+    "hdfcbank.com",
+    "ibm.com",
+    "icicibank.com",
+    "intel.com",
+    "kaggle.com",
     "kubernetes.io",
     "linkedin.com",
     "microsoft.com",
+    "myntra.com",
+    "nvidia.com",
     "mozilla.org",
     "npmjs.com",
+    "okta.com",
+    "oracle.com",
+    "palantir.com",
+    "paypal.com",
+    "paytm.com",
+    "phonepe.com",
     "postgresql.org",
     "pypi.org",
     "python.org",
+    "razorpay.com",
     "reddit.com",
     "redis.io",
+    "salesforce.com",
+    "sbi.co.in",
+    "splunk.com",
     "stackoverflow.com",
+    "swiggy.com",
+    "zepto.com",
+    "zomato.com",
     "virustotal.com",
     "wikipedia.org",
 }
@@ -100,6 +155,9 @@ SUSPICIOUS_TLDS = {
 }
 
 COMMON_SECOND_LEVEL_TLDS = {"co", "com", "net", "org", "gov", "ac", "edu"}
+CREDENTIAL_KEYWORDS = {"login", "signin", "verify", "account", "password", "reset", "kyc", "checkpoint", "auth"}
+ECOMMERCE_KEYWORDS = {"billing", "payment", "invoice", "wallet", "upi", "offer", "merchant", "order"}
+FINANCIAL_KEYWORDS = {"bank", "paypal", "paytm", "phonepe", "razorpay", "hdfc", "icici", "sbi", "axis", "kyc"}
 
 
 def shannon_entropy(value: str) -> float:
@@ -164,6 +222,19 @@ class URLFeatures:
     known_url_shortener: int
     path_token_count: int
     repeated_separator_count: int
+    domain_token_count: int
+    domain_entropy: float
+    path_entropy: float
+    brand_in_registered_domain: int
+    brand_in_path: int
+    brand_impersonation_score: int
+    suspicious_path_keyword_count: int
+    credential_keyword_count: int
+    ecommerce_keyword_count: int
+    financial_keyword_count: int
+    punycode_detected: int
+    url_shortener_detected: int
+    is_known_legitimate_registered_domain: int
     has_login_keyword: int
     has_verify_keyword: int
     has_account_keyword: int
@@ -202,6 +273,19 @@ class FeatureExtractor:
         "known_url_shortener",
         "path_token_count",
         "repeated_separator_count",
+        "domain_token_count",
+        "domain_entropy",
+        "path_entropy",
+        "brand_in_registered_domain",
+        "brand_in_path",
+        "brand_impersonation_score",
+        "suspicious_path_keyword_count",
+        "credential_keyword_count",
+        "ecommerce_keyword_count",
+        "financial_keyword_count",
+        "punycode_detected",
+        "url_shortener_detected",
+        "is_known_legitimate_registered_domain",
         "has_login_keyword",
         "has_verify_keyword",
         "has_account_keyword",
@@ -227,6 +311,21 @@ class FeatureExtractor:
         reg_domain_brand_count = sum(keyword in reg_domain for keyword in BRAND_KEYWORDS)
         subdomain_part = lower_hostname.removesuffix(reg_domain).rstrip(".")
         path_tokens = _tokens(path)
+        domain_tokens = _tokens(lower_hostname)
+        all_tokens = domain_tokens + path_tokens + _tokens(query)
+        path_brand_count = sum(keyword in path.lower() for keyword in BRAND_KEYWORDS)
+        credential_count = sum(keyword in all_tokens for keyword in CREDENTIAL_KEYWORDS)
+        ecommerce_count = sum(keyword in all_tokens for keyword in ECOMMERCE_KEYWORDS)
+        financial_count = sum(any(keyword in token for token in all_tokens) for keyword in FINANCIAL_KEYWORDS)
+        suspicious_path_count = sum(keyword in path.lower() for keyword in SUSPICIOUS_KEYWORDS)
+        known_legitimate_domain = int(
+            reg_domain in KNOWN_BRAND_REGISTERED_DOMAINS
+            or lower_hostname in KNOWN_BRAND_REGISTERED_DOMAINS
+        )
+        brand_impersonation_score = int(domain_brand_count > 0 and reg_domain_brand_count == 0)
+        brand_impersonation_score += int(any(keyword in subdomain_part for keyword in BRAND_KEYWORDS))
+        brand_impersonation_score += int(path_brand_count > 0 and not known_legitimate_domain)
+        brand_impersonation_score += int(tld in SUSPICIOUS_TLDS and domain_brand_count > 0)
         ip_hostname = bool(re.fullmatch(r"\d{1,3}(\.\d{1,3}){3}", hostname))
         features = URLFeatures(
             url_length=len(value),
@@ -250,15 +349,25 @@ class FeatureExtractor:
             brand_keyword_count=brand_count,
             domain_contains_brand_keyword=int(domain_brand_count > 0),
             brand_keyword_not_in_registered_domain=int(domain_brand_count > 0 and reg_domain_brand_count == 0),
-            known_brand_registered_domain=int(
-                reg_domain in KNOWN_BRAND_REGISTERED_DOMAINS
-                or lower_hostname in KNOWN_BRAND_REGISTERED_DOMAINS
-            ),
+            known_brand_registered_domain=known_legitimate_domain,
             brand_in_subdomain=int(any(keyword in subdomain_part for keyword in BRAND_KEYWORDS)),
             hostname_is_registered_domain=int(lower_hostname == reg_domain or lower_hostname == f"www.{reg_domain}"),
             known_url_shortener=int(reg_domain in KNOWN_URL_SHORTENERS),
             path_token_count=len(path_tokens),
             repeated_separator_count=len(re.findall(r"[-_/]{2,}", value)),
+            domain_token_count=len(domain_tokens),
+            domain_entropy=shannon_entropy(lower_hostname),
+            path_entropy=shannon_entropy(path),
+            brand_in_registered_domain=int(reg_domain_brand_count > 0),
+            brand_in_path=int(path_brand_count > 0),
+            brand_impersonation_score=brand_impersonation_score,
+            suspicious_path_keyword_count=suspicious_path_count,
+            credential_keyword_count=credential_count,
+            ecommerce_keyword_count=ecommerce_count,
+            financial_keyword_count=financial_count,
+            punycode_detected=int("xn--" in lower_hostname),
+            url_shortener_detected=int(reg_domain in KNOWN_URL_SHORTENERS),
+            is_known_legitimate_registered_domain=known_legitimate_domain,
             has_login_keyword=int("login" in lower_url or "signin" in lower_url),
             has_verify_keyword=int("verify" in lower_url),
             has_account_keyword=int("account" in lower_url),
@@ -286,6 +395,11 @@ class FeatureExtractor:
         features.update(self.extract_email(event))
         for key in self.feature_order:
             features.setdefault(key, 0.0)
+        domain = extract_domain(event.get("url"))
+        reg_domain = registered_domain(domain)
+        features["registered_domain"] = reg_domain
+        features["public_suffix"] = reg_domain.rsplit(".", 1)[-1] if "." in reg_domain else ""
+        features["domain_without_suffix"] = reg_domain.rsplit(".", 1)[0] if "." in reg_domain else reg_domain
         return features
 
     def vectorize(self, features: dict[str, float]) -> list[float]:

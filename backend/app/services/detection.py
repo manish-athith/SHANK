@@ -29,6 +29,7 @@ class DetectionEngine:
             ml_result["phishing_probability"],
             ml_result["anomaly_score"],
             threat_intel_hit=threat["hit"],
+            features=ml_result["features"],
         )
 
         stored_event: PhishingEvent | None = None

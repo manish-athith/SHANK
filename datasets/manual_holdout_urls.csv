@@ -1,0 +1,100 @@
+url,expected_label,notes
+https://www.zepto.com,0,independent holdout benign acceptance
+https://www.palantir.com,0,independent holdout benign acceptance
+https://www.amazon.in,0,independent holdout benign acceptance
+https://www.paypal.com/in/home,0,independent holdout benign acceptance
+https://www.microsoft.com/en-us/security,0,independent holdout benign acceptance
+https://github.com,0,independent holdout benign acceptance
+https://www.cloudflare.com/learning/security/,0,independent holdout benign acceptance
+https://www.google.com/search?q=security,0,independent holdout benign search
+https://accounts.google.com/signin,0,independent holdout benign login page
+https://support.google.com/accounts,0,independent holdout benign support
+https://www.apple.com/in/,0,independent holdout benign
+https://support.apple.com/en-in,0,independent holdout benign support
+https://www.amazon.com/gp/help/customer/display.html,0,independent holdout benign help
+https://www.paypal.com/us/signin,0,independent holdout benign login page
+https://www.cloudflare.com/products/zero-trust/,0,independent holdout benign security product
+https://docs.github.com/en/authentication,0,independent holdout benign docs
+https://stackoverflow.com/questions,0,independent holdout benign
+https://www.python.org/downloads/,0,independent holdout benign
+https://pypi.org/project/pandas/,0,independent holdout benign
+https://www.npmjs.com/package/react,0,independent holdout benign
+https://docs.docker.com/engine/security/,0,independent holdout benign docs
+https://kubernetes.io/docs/home/,0,independent holdout benign docs
+https://fastapi.tiangolo.com/tutorial/security/,0,independent holdout benign docs
+https://www.postgresql.org/docs/,0,independent holdout benign docs
+https://redis.io/docs/latest/,0,independent holdout benign docs
+https://www.virustotal.com/gui/home/upload,0,independent holdout benign security
+https://www.swiggy.com/restaurants,0,independent holdout benign commerce
+https://www.zomato.com/india,0,independent holdout benign commerce
+https://www.flipkart.com/account/login,0,independent holdout benign commerce login
+https://www.myntra.com/login,0,independent holdout benign commerce login
+https://www.phonepe.com/business-solutions,0,independent holdout benign payments
+https://paytm.com/recharge,0,independent holdout benign payments
+https://www.razorpay.com/docs/,0,independent holdout benign payments docs
+https://www.hdfcbank.com/personal/login,0,independent holdout benign bank login
+https://www.icicibank.com/personal-banking,0,independent holdout benign bank
+https://www.axisbank.com/bank-smart/internet-banking,0,independent holdout benign bank
+https://www.sbi.co.in/web/personal-banking,0,independent holdout benign bank
+https://www.salesforce.com/in/,0,independent holdout benign enterprise
+https://www.oracle.com/in/cloud/,0,independent holdout benign enterprise
+https://www.ibm.com/security,0,independent holdout benign security
+https://www.adobe.com/in/products/catalog.html,0,independent holdout benign enterprise
+https://www.intel.com/content/www/us/en/security-center/default.html,0,independent holdout benign security
+https://www.nvidia.com/en-us/security/,0,independent holdout benign security
+https://www.cisco.com/site/us/en/products/security/index.html,0,independent holdout benign security
+https://www.okta.com/login/,0,independent holdout benign identity
+https://www.crowdstrike.com/en-us/platform/,0,independent holdout benign security
+https://www.splunk.com/en_us/products/security.html,0,independent holdout benign security
+https://www.elastic.co/security,0,independent holdout benign security
+https://www.datadoghq.com/product/security-monitoring/,0,independent holdout benign security
+https://developer.mozilla.org/en-US/docs/Web/Security,0,independent holdout benign docs
+http://paypal-login-security-check.example.com/update-password,1,independent holdout fake paypal acceptance
+http://amazon-account-verify.example.net/billing/update,1,independent holdout fake amazon acceptance
+http://login-microsoftonline-security-check.example.test/verify/account/password-reset,1,independent holdout fake microsoft acceptance
+http://zepto-offer-wallet-login.example.com/verify,1,independent holdout fake zepto acceptance
+http://palantir-careers-login.example.net/account/secure,1,independent holdout fake palantir acceptance
+http://secure-paypal-login.example.info/session,1,independent holdout fake paypal
+http://paypal-support-wallet.example.invalid/account/confirm,1,independent holdout fake paypal
+http://amazon-in-prime-refund.example.test/login,1,independent holdout fake amazon
+http://amazon-pay-billing.example.invalid/update,1,independent holdout fake amazon
+http://microsoft-office365-alert.example.org/account/verify,1,independent holdout fake microsoft
+http://microsoft-security-portal.example.info/password-reset,1,independent holdout fake microsoft
+http://google-workspace-admin.example.org/security/login,1,independent holdout fake google
+http://signin-google-security-alert.example.org/password/reset,1,independent holdout fake google
+http://appleid-verify-account.example.com/session/login,1,independent holdout fake apple
+http://apple-support-billing.example.info/account,1,independent holdout fake apple
+http://cloudflare-dns-security.example.net/verify,1,independent holdout fake cloudflare
+http://cloudflare-zero-trust-login.example.invalid/account,1,independent holdout fake cloudflare
+http://github-security-oauth.example.com/login,1,independent holdout fake github
+http://github-token-rotation.example.test/verify,1,independent holdout fake github
+http://hdfcbank-kyc-update.example.org/customer/login,1,independent holdout fake hdfc
+http://phonepe-wallet-verification.example.info/upi/validate,1,independent holdout fake phonepe
+http://razorpay-merchant-security.example.test/account/update,1,independent holdout fake razorpay
+http://flipkart-payment-refund.example.invalid/login,1,independent holdout fake flipkart
+http://swiggy-offer-wallet.example.com/account/verify,1,independent holdout fake swiggy
+http://zomato-gold-refund.example.net/payment/update,1,independent holdout fake zomato
+http://salesforce-sso-security.example.org/login,1,independent holdout fake salesforce
+http://oracle-cloud-payment.example.info/billing/update,1,independent holdout fake oracle
+http://ibm-cloud-account.example.test/verify,1,independent holdout fake ibm
+http://adobe-creative-cloud-login.example.invalid/password,1,independent holdout fake adobe
+http://nvidia-developer-billing.example.com/account,1,independent holdout fake nvidia
+http://cisco-vpn-auth.example.net/login,1,independent holdout fake cisco
+http://okta-sso-checkpoint.example.org/verify,1,independent holdout fake okta
+http://crowdstrike-console-alert.example.info/account,1,independent holdout fake crowdstrike
+http://splunk-cloud-security.example.test/verify,1,independent holdout fake splunk
+http://elastic-cloud-billing.example.invalid/update,1,independent holdout fake elastic
+http://datadog-monitoring-alert.example.com/login,1,independent holdout fake datadog
+http://npm-package-security.example.info/login,1,independent holdout fake npm
+http://docker-registry-auth.example.test/token,1,independent holdout fake docker
+http://pypi-account-token-reset.example.info/login,1,independent holdout fake pypi
+http://redis-cloud-billing.example.com/update,1,independent holdout fake redis
+http://postgresql-cloud-admin.example.test/account,1,independent holdout fake postgresql
+http://virustotal-api-key-confirm.example.invalid/account,1,independent holdout fake virustotal
+http://stackoverflow-careers-login.example.com/account,1,independent holdout fake stackoverflow
+http://mozilla-developer-auth.example.test/verify,1,independent holdout fake mozilla
+http://react-dev-security.example.net/login,1,independent holdout fake react
+http://nodejs-package-alert.example.org/verify,1,independent holdout fake node
+http://kubernetes-dashboard-auth.example.info/login,1,independent holdout fake kubernetes
+http://fastapi-docs-account.example.test/verify,1,independent holdout fake fastapi
+http://xgboost-readthedocs-auth.example.invalid/login,1,independent holdout fake docs

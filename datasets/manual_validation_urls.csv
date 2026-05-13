@@ -1,41 +1,203 @@
 url,expected_label,notes
-https://www.google.com,0,well-known benign
-https://www.microsoft.com/en-us/security,0,well-known benign security page
-https://www.cloudflare.com/learning/security/,0,well-known benign security page
-https://github.com,0,well-known benign
-https://stackoverflow.com,0,well-known benign
-https://www.apple.com,0,well-known benign
-https://www.amazon.com,0,well-known benign
-https://www.wikipedia.org,0,well-known benign
-https://www.python.org,0,well-known benign
-https://www.mozilla.org,0,well-known benign
-https://www.linkedin.com,0,well-known benign
-https://www.reddit.com,0,well-known benign
-https://www.npmjs.com,0,well-known benign
-https://pypi.org,0,well-known benign
-https://docs.docker.com,0,well-known benign documentation
-https://kubernetes.io,0,well-known benign documentation
-https://fastapi.tiangolo.com,0,well-known benign documentation
-https://www.postgresql.org,0,well-known benign
-https://redis.io,0,well-known benign
-https://www.virustotal.com,0,well-known benign security service
-http://secure-login-paypa1.example.info/update-billing,1,synthetic phishing-style URL on safe example domain
-http://login-microsoftonline-security-check.example.ru/verify/account/password-reset,1,synthetic phishing-style URL on safe example domain
-http://appleid-verify-account.example.com/session/login,1,synthetic phishing-style URL on safe example domain
-http://bankofamerica-secure-update.example.net/account/verify,1,synthetic phishing-style URL on safe example domain
-http://signin-google-security-alert.example.org/password/reset,1,synthetic phishing-style URL on safe example domain
-http://paypal-confirm-wallet.example.info/login/verify,1,synthetic phishing-style URL on safe example domain
-http://github-security-oauth.example.net/session/confirm,1,synthetic phishing-style URL on safe example domain
-http://amazon-prime-billing-update.example.org/account,1,synthetic phishing-style URL on safe example domain
-http://linkedin-account-limited.example.com/verify,1,synthetic phishing-style URL on safe example domain
-http://cloudflare-support-ticket.example.info/login,1,synthetic phishing-style URL on safe example domain
-http://apple-support-password.example.ru/reset,1,synthetic phishing-style URL on safe example domain
-http://google-drive-shared-document.example.net/secure/login,1,synthetic phishing-style URL on safe example domain
-http://microsoft-office365-alert.example.org/account/verify,1,synthetic phishing-style URL on safe example domain
-http://bank-secure-message.example.com/login?id=834839,1,synthetic phishing-style URL on safe example domain
-http://wallet-confirm-seed-phrase.example.info/recover,1,synthetic phishing-style URL on safe example domain
-http://urgent-invoice-payment.example.net/download,1,synthetic phishing-style URL on safe example domain
-http://reddit-premium-security.example.org/password,1,synthetic phishing-style URL on safe example domain
-http://npmjs-package-security-check.example.com/verify,1,synthetic phishing-style URL on safe example domain
-http://pypi-account-token-reset.example.info/login,1,synthetic phishing-style URL on safe example domain
-http://virustotal-api-key-confirm.example.ru/account,1,synthetic phishing-style URL on safe example domain
+https://www.google.com,0,guardrail benign major tech
+https://accounts.google.com,0,guardrail benign major tech
+https://mail.google.com,0,guardrail benign major tech
+https://workspace.google.com,0,guardrail benign major tech
+https://www.microsoft.com,0,guardrail benign major tech
+https://support.microsoft.com,0,guardrail benign major tech
+https://www.apple.com,0,guardrail benign major tech
+https://support.apple.com,0,guardrail benign major tech
+https://www.amazon.com,0,guardrail benign commerce
+https://www.paypal.com,0,guardrail benign payments
+https://www.paypal.com/us/home,0,guardrail benign payments home
+https://www.paypal.com/us/signin,0,guardrail benign payments login
+https://www.cloudflare.com,0,guardrail benign security
+https://www.cloudflarestatus.com,0,guardrail benign status
+https://github.com,0,guardrail benign developer
+https://docs.github.com,0,guardrail benign developer docs
+https://stackoverflow.com,0,guardrail benign developer
+https://www.python.org,0,guardrail benign developer
+https://pypi.org,0,guardrail benign developer
+https://www.npmjs.com,0,guardrail benign developer
+https://docs.docker.com,0,guardrail benign developer docs
+https://kubernetes.io,0,guardrail benign developer
+https://fastapi.tiangolo.com,0,guardrail benign developer
+https://www.postgresql.org,0,guardrail benign database
+https://redis.io,0,guardrail benign database
+https://www.virustotal.com,0,guardrail benign security
+https://react.dev,0,guardrail benign developer
+https://nodejs.org,0,guardrail benign developer
+https://vite.dev,0,guardrail benign developer
+https://tailwindcss.com,0,guardrail benign developer
+https://scikit-learn.org,0,guardrail benign developer
+https://xgboost.readthedocs.io,0,guardrail benign docs
+https://pandas.pydata.org,0,guardrail benign developer
+https://numpy.org,0,guardrail benign developer
+https://docs.python.org/3/,0,guardrail benign developer docs
+https://developer.mozilla.org,0,guardrail benign developer docs
+https://www.wikipedia.org,0,guardrail benign reference
+https://www.bbc.com,0,guardrail benign news
+https://www.reuters.com,0,guardrail benign news
+https://www.thehindu.com,0,guardrail benign news
+https://www.nytimes.com,0,guardrail benign news
+https://www.coursera.org,0,guardrail benign education
+https://www.edx.org,0,guardrail benign education
+https://www.kaggle.com,0,guardrail benign data science
+https://archive.ics.uci.edu,0,guardrail benign education
+https://www.swiggy.com,0,guardrail benign Indian commerce
+https://www.zomato.com,0,guardrail benign Indian commerce
+https://www.flipkart.com,0,guardrail benign Indian commerce
+https://www.myntra.com,0,guardrail benign Indian commerce
+https://www.phonepe.com,0,guardrail benign payments
+https://paytm.com,0,guardrail benign payments
+https://www.razorpay.com,0,guardrail benign payments
+https://www.hdfcbank.com,0,guardrail benign bank
+https://www.icicibank.com,0,guardrail benign bank
+https://www.axisbank.com,0,guardrail benign bank
+https://www.sbi.co.in,0,guardrail benign bank
+https://www.salesforce.com,0,guardrail benign enterprise
+https://www.oracle.com,0,guardrail benign enterprise
+https://www.ibm.com,0,guardrail benign enterprise
+https://www.adobe.com,0,guardrail benign enterprise
+https://www.intel.com,0,guardrail benign enterprise
+https://www.nvidia.com,0,guardrail benign enterprise
+https://www.cisco.com,0,guardrail benign enterprise
+https://www.okta.com,0,guardrail benign identity
+https://www.crowdstrike.com,0,guardrail benign security
+https://www.splunk.com,0,guardrail benign security
+https://www.elastic.co,0,guardrail benign enterprise
+https://www.datadoghq.com,0,guardrail benign enterprise
+https://www.mozilla.org,0,guardrail benign open source
+https://www.linkedin.com,0,guardrail benign social
+https://www.reddit.com,0,guardrail benign social
+https://www.netflix.com,0,guardrail benign consumer
+https://www.dropbox.com,0,guardrail benign cloud
+https://www.facebook.com,0,guardrail benign social
+https://www.instagram.com,0,guardrail benign social
+https://www.whatsapp.com,0,guardrail benign communication
+https://www.spotify.com,0,guardrail benign consumer
+https://www.shopify.com,0,guardrail benign commerce
+https://www.stripe.com,0,guardrail benign payments
+https://www.atlassian.com,0,guardrail benign enterprise
+https://www.jetbrains.com,0,guardrail benign developer
+https://www.digitalocean.com,0,guardrail benign cloud
+https://www.heroku.com,0,guardrail benign cloud
+https://www.mongodb.com,0,guardrail benign database
+https://www.elastic.com,0,guardrail benign enterprise
+https://www.redhat.com,0,guardrail benign enterprise
+https://www.ubuntu.com,0,guardrail benign linux
+https://www.debian.org,0,guardrail benign linux
+https://www.figma.com,0,guardrail benign design
+https://www.canva.com,0,guardrail benign design
+https://www.trello.com,0,guardrail benign productivity
+https://www.notion.so,0,guardrail benign productivity
+https://www.slack.com,0,guardrail benign productivity
+https://www.zoom.us,0,guardrail benign communication
+https://www.openai.com,0,guardrail benign ai
+https://platform.openai.com,0,guardrail benign ai
+https://www.anthropic.com,0,guardrail benign ai
+https://www.cohere.com,0,guardrail benign ai
+https://huggingface.co,0,guardrail benign ai
+https://www.mlflow.org,0,guardrail benign ml
+https://www.tensorflow.org,0,guardrail benign ml
+https://pytorch.org,0,guardrail benign ml
+http://secure-paypal-login.example.info/session,1,guardrail synthetic phishing
+http://paypal-security-center.example.com/update-password,1,guardrail synthetic phishing
+http://paypal-wallet-confirm.example.net/login/verify,1,guardrail synthetic phishing
+http://paypal-billing-support.example.org/account/update,1,guardrail synthetic phishing
+http://amazon-account-verify.example.net/billing/update,1,guardrail synthetic phishing
+http://amazon-prime-billing-update.example.org/account,1,guardrail synthetic phishing
+http://amazon-order-payment.example.info/login,1,guardrail synthetic phishing
+http://amazon-wallet-refund.example.test/verify,1,guardrail synthetic phishing
+http://appleid-verify-account.example.com/session/login,1,guardrail synthetic phishing
+http://apple-support-billing.example.info/account,1,guardrail synthetic phishing
+http://apple-password-reset.example.net/verify,1,guardrail synthetic phishing
+http://icloud-security-check.example.org/login,1,guardrail synthetic phishing
+http://signin-google-security-alert.example.org/password/reset,1,guardrail synthetic phishing
+http://google-workspace-admin.example.org/security/login,1,guardrail synthetic phishing
+http://google-drive-document.example.net/account/verify,1,guardrail synthetic phishing
+http://gmail-mailbox-quota.example.info/login,1,guardrail synthetic phishing
+http://microsoft-365-password-reset.example.net/verify,1,guardrail synthetic phishing
+http://office365-security-update.example.org/account/login,1,guardrail synthetic phishing
+http://microsoft-teams-invite.example.info/password,1,guardrail synthetic phishing
+http://onedrive-shared-file.example.test/login,1,guardrail synthetic phishing
+http://github-security-oauth.example.com/login,1,guardrail synthetic phishing
+http://github-repository-alert.example.net/verify,1,guardrail synthetic phishing
+http://github-token-expired.example.org/account,1,guardrail synthetic phishing
+http://npm-package-security.example.info/login,1,guardrail synthetic phishing
+http://npmjs-token-verify.example.test/account,1,guardrail synthetic phishing
+http://docker-registry-auth.example.test/token,1,guardrail synthetic phishing
+http://docker-hub-billing.example.com/update,1,guardrail synthetic phishing
+http://cloudflare-dns-security.example.net/verify,1,guardrail synthetic phishing
+http://cloudflare-support-ticket.example.info/login,1,guardrail synthetic phishing
+http://linkedin-account-protection.example.org/checkpoint,1,guardrail synthetic phishing
+http://linkedin-security-message.example.com/account,1,guardrail synthetic phishing
+http://hdfcbank-kyc-update.example.org/customer/login,1,guardrail synthetic phishing
+http://hdfc-netbanking-alert.example.net/verify,1,guardrail synthetic phishing
+http://icicibank-card-update.example.info/login,1,guardrail synthetic phishing
+http://axisbank-secure-message.example.com/kyc,1,guardrail synthetic phishing
+http://sbi-account-hold.example.net/verify,1,guardrail synthetic phishing
+http://phonepe-wallet-verification.example.info/upi/validate,1,guardrail synthetic phishing
+http://paytm-wallet-kyc.example.com/account/update,1,guardrail synthetic phishing
+http://razorpay-merchant-security.example.test/account/update,1,guardrail synthetic phishing
+http://flipkart-offer-wallet.example.net/login,1,guardrail synthetic phishing
+http://myntra-gift-card.example.org/verify,1,guardrail synthetic phishing
+http://swiggy-delivery-refund.example.info/account,1,guardrail synthetic phishing
+http://zomato-gold-payment.example.test/login,1,guardrail synthetic phishing
+http://salesforce-login-security.example.com/password,1,guardrail synthetic phishing
+http://oracle-cloud-billing.example.net/update,1,guardrail synthetic phishing
+http://ibm-cloud-account.example.org/verify,1,guardrail synthetic phishing
+http://adobe-creative-cloud.example.info/login,1,guardrail synthetic phishing
+http://nvidia-developer-portal.example.test/account,1,guardrail synthetic phishing
+http://intel-support-security.example.com/verify,1,guardrail synthetic phishing
+http://cisco-vpn-login.example.net/password,1,guardrail synthetic phishing
+http://okta-sso-checkpoint.example.org/login,1,guardrail synthetic phishing
+http://crowdstrike-console-alert.example.info/account,1,guardrail synthetic phishing
+http://splunk-cloud-security.example.test/verify,1,guardrail synthetic phishing
+http://elastic-cloud-billing.example.com/update,1,guardrail synthetic phishing
+http://datadog-monitoring-alert.example.net/login,1,guardrail synthetic phishing
+http://facebook-security-check.example.org/password,1,guardrail synthetic phishing
+http://instagram-copyright-warning.example.info/login,1,guardrail synthetic phishing
+http://whatsapp-web-verify.example.test/account,1,guardrail synthetic phishing
+http://netflix-payment-failed.example.com/billing,1,guardrail synthetic phishing
+http://dropbox-file-share-login.example.net/auth,1,guardrail synthetic phishing
+http://reddit-premium-security.example.org/password,1,guardrail synthetic phishing
+http://wikipedia-donation-refund.example.info/account,1,guardrail synthetic phishing
+http://coursera-certificate-payment.example.test/login,1,guardrail synthetic phishing
+http://edx-account-verification.example.com/verify,1,guardrail synthetic phishing
+http://kaggle-dataset-access.example.net/login,1,guardrail synthetic phishing
+http://python-package-index.example.org/password,1,guardrail synthetic phishing
+http://pypi-account-token-reset.example.info/login,1,guardrail synthetic phishing
+http://postgresql-cloud-admin.example.test/account,1,guardrail synthetic phishing
+http://redis-cloud-billing.example.com/update,1,guardrail synthetic phishing
+http://virustotal-api-key-confirm.example.ru/account,1,guardrail synthetic phishing
+http://react-dev-security.example.net/login,1,guardrail synthetic phishing
+http://nodejs-package-alert.example.org/verify,1,guardrail synthetic phishing
+http://vite-plugin-update.example.info/account,1,guardrail synthetic phishing
+http://tailwindcss-account.example.test/login,1,guardrail synthetic phishing
+http://scikit-learn-docs.example.com/password,1,guardrail synthetic phishing
+http://xgboost-package-security.example.net/verify,1,guardrail synthetic phishing
+http://pandas-pydata-login.example.org/account,1,guardrail synthetic phishing
+http://numpy-wheel-download.example.info/login,1,guardrail synthetic phishing
+http://mozilla-developer-auth.example.test/verify,1,guardrail synthetic phishing
+http://stackoverflow-careers-login.example.com/account,1,guardrail synthetic phishing
+http://bbc-news-subscription.example.net/payment,1,guardrail synthetic phishing
+http://reuters-login-alert.example.org/password,1,guardrail synthetic phishing
+http://nytimes-account-renewal.example.info/billing,1,guardrail synthetic phishing
+http://thehindu-subscription-update.example.test/login,1,guardrail synthetic phishing
+http://stripe-payout-confirm.example.com/account,1,guardrail synthetic phishing
+http://shopify-store-admin.example.net/login,1,guardrail synthetic phishing
+http://atlassian-jira-security.example.org/verify,1,guardrail synthetic phishing
+http://jetbrains-license-update.example.info/account,1,guardrail synthetic phishing
+http://digitalocean-droplet-billing.example.test/payment,1,guardrail synthetic phishing
+http://heroku-app-suspended.example.com/login,1,guardrail synthetic phishing
+http://mongodb-cloud-alert.example.net/verify,1,guardrail synthetic phishing
+http://redhat-portal-security.example.org/account,1,guardrail synthetic phishing
+http://ubuntu-one-login.example.info/password,1,guardrail synthetic phishing
+http://figma-file-share.example.test/login,1,guardrail synthetic phishing
+http://canva-team-invite.example.com/account,1,guardrail synthetic phishing
+http://slack-workspace-auth.example.net/verify,1,guardrail synthetic phishing
+http://zoom-meeting-security.example.org/login,1,guardrail synthetic phishing
+http://openai-platform-billing.example.info/account/update,1,guardrail synthetic phishing
+http://huggingface-model-access.example.test/login,1,guardrail synthetic phishing
+http://tensorflow-package-security.example.invalid/verify,1,guardrail synthetic phishing

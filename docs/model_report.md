@@ -36,7 +36,15 @@ PhiUSIIL columns are interpreted as:
 
 The trainer ignores PhiUSIIL precomputed columns because they are not available during runtime prediction.
 
-Calibration uses a held-out PhiUSIIL validation split plus a small curated manual URL set with runtime-safe URL features. This is intended to catch obvious real-world false positives such as legitimate vendor security pages while preserving high scores for synthetic phishing-style URLs. Because the manual set is small and participates in calibration, its metrics are a guardrail and regression check, not an independent production benchmark.
+Calibration uses a held-out PhiUSIIL validation split plus `datasets/manual_validation_urls.csv` as a calibration guardrail. `datasets/manual_holdout_urls.csv` is evaluated separately and is not used for calibration. The holdout includes real-world benign commercial, enterprise, developer, banking, and security URLs plus synthetic phishing-style URLs on reserved example domains.
+
+These metrics are split by purpose:
+
+- Training metrics: model behavior on the PhiUSIIL train/test split.
+- Calibration guardrail: examples used to reduce obvious URL-only false positives.
+- Independent manual holdout: regression check for real-world benign URLs and synthetic impersonation URLs not used for calibration.
+
+SHANK remains URL-feature-only. It does not inspect live page content, certificates, DNS age, redirects, or external reputation during training. Treat release artifacts as demo/research artifacts, not production proof.
 
 Metrics written to `ml/models/metrics.json`:
 
@@ -51,7 +59,9 @@ Metrics written to `ml/models/metrics.json`:
 - feature list used by both training and inference
 - dataset metadata, including row counts, label mapping, and training timestamp
 - calibration method, chosen probability threshold, and configured alert threshold
-- manual validation summary when `datasets/manual_validation_urls.csv` exists
+- calibration guardrail and independent manual holdout summaries when those files exist
 - warnings for small datasets, class imbalance, or suspiciously perfect ROC-AUC
 
 Phishing is the positive class for precision, recall, F1, ROC-AUC, and false negative counts. Higher `phishing_probability` still means higher phishing risk in API responses.
+
+The dashboard displays alert timestamps in the browser's local time. Backend timestamps without explicit timezone suffixes are normalized as UTC before rendering.

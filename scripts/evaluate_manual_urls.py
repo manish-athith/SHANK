@@ -36,23 +36,51 @@ def load_manual_validation(path: Path) -> pd.DataFrame:
     return frame.reset_index(drop=True)
 
 
+def summarize_results(results: pd.DataFrame) -> dict[str, Any]:
+    y_true = results["expected_label"].astype(int)
+    y_pred = results["predicted_label"].astype(int)
+    false_positives = results.loc[(y_true == 0) & (y_pred == 1)].to_dict(orient="records")
+    false_negatives = results.loc[(y_true == 1) & (y_pred == 0)].to_dict(orient="records")
+    high_risk_benign = results.loc[(y_true == 0) & (results["severity"].isin(["high", "critical"]))]
+    critical_risk_benign = results.loc[(y_true == 0) & (results["severity"] == "critical")]
+    return {
+        "total": int(len(results)),
+        "benign_total": int((y_true == 0).sum()),
+        "phishing_total": int((y_true == 1).sum()),
+        "accuracy": round(float(accuracy_score(y_true, y_pred)), 4),
+        "precision": round(float(precision_score(y_true, y_pred, zero_division=0)), 4),
+        "recall": round(float(recall_score(y_true, y_pred, zero_division=0)), 4),
+        "f1": round(float(f1_score(y_true, y_pred, zero_division=0)), 4),
+        "false_positive_count": int(len(false_positives)),
+        "false_negative_count": int(len(false_negatives)),
+        "false_positives": false_positives,
+        "false_negatives": false_negatives,
+        "high_risk_benign_count": int(len(high_risk_benign)),
+        "critical_risk_benign_count": int(len(critical_risk_benign)),
+        "saturated_high_probability_count": int((results["phishing_probability"] >= 0.99).sum()),
+        "saturated_low_probability_count": int((results["phishing_probability"] <= 0.01).sum()),
+    }
+
+
 def evaluate_urls(
     input_path: Path,
     results_path: Path,
     summary_path: Path,
+    engine: MLInferenceEngine | None = None,
 ) -> dict[str, Any]:
     settings = get_settings()
-    engine = MLInferenceEngine()
+    ml_engine = engine or MLInferenceEngine()
     risk = RiskScoringEngine()
     frame = load_manual_validation(input_path)
 
     rows: list[dict[str, Any]] = []
     for record in frame.to_dict(orient="records"):
-        ml_result = engine.predict({"url": record["url"], "event_type": "url", "source": "manual_validation"})
+        ml_result = ml_engine.predict({"url": record["url"], "event_type": "url", "source": "manual_validation"})
         risk_result = risk.score(
             ml_result["phishing_probability"],
             ml_result["anomaly_score"],
             threat_intel_hit=False,
+            features=ml_result.get("features", {}),
         )
         predicted_label = int(risk_result.risk_score >= settings.risk_alert_threshold)
         rows.append(
@@ -70,24 +98,7 @@ def evaluate_urls(
         )
 
     results = pd.DataFrame(rows)
-    y_true = results["expected_label"].astype(int)
-    y_pred = results["predicted_label"].astype(int)
-    false_positives = results.loc[(y_true == 0) & (y_pred == 1)].to_dict(orient="records")
-    false_negatives = results.loc[(y_true == 1) & (y_pred == 0)].to_dict(orient="records")
-    summary: dict[str, Any] = {
-        "total": int(len(results)),
-        "benign_total": int((y_true == 0).sum()),
-        "phishing_total": int((y_true == 1).sum()),
-        "accuracy": round(float(accuracy_score(y_true, y_pred)), 4),
-        "precision": round(float(precision_score(y_true, y_pred, zero_division=0)), 4),
-        "recall": round(float(recall_score(y_true, y_pred, zero_division=0)), 4),
-        "f1": round(float(f1_score(y_true, y_pred, zero_division=0)), 4),
-        "false_positive_count": int(len(false_positives)),
-        "false_negative_count": int(len(false_negatives)),
-        "false_positives": false_positives,
-        "false_negatives": false_negatives,
-    }
-
+    summary = summarize_results(results)
     results_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     results.to_csv(results_path, index=False)
@@ -96,13 +107,44 @@ def evaluate_urls(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Evaluate SHANK models on manual URL validation cases.")
-    parser.add_argument("--input", default="datasets/manual_validation_urls.csv")
-    parser.add_argument("--results", default="ml/models/manual_validation_results.csv")
-    parser.add_argument("--summary", default="ml/models/manual_validation_summary.json")
+    parser = argparse.ArgumentParser(description="Evaluate SHANK models on URL validation cases.")
+    parser.add_argument("--guardrail-input", default="datasets/manual_validation_urls.csv")
+    parser.add_argument("--holdout-input", default="datasets/manual_holdout_urls.csv")
+    parser.add_argument("--legacy-input", default="datasets/manual_validation_urls.csv")
+    parser.add_argument("--results-dir", default="ml/models")
     args = parser.parse_args()
-    summary = evaluate_urls(Path(args.input), Path(args.results), Path(args.summary))
-    print(json.dumps(summary, indent=2))
+
+    results_dir = Path(args.results_dir)
+    engine = MLInferenceEngine()
+    outputs = {}
+    guardrail_path = Path(args.guardrail_input)
+    holdout_path = Path(args.holdout_input)
+    legacy_path = Path(args.legacy_input)
+
+    if guardrail_path.exists():
+        outputs["calibration_guardrail"] = evaluate_urls(
+            guardrail_path,
+            results_dir / "manual_validation_results.csv",
+            results_dir / "manual_validation_summary.json",
+            engine=engine,
+        )
+    elif legacy_path.exists():
+        outputs["manual_validation"] = evaluate_urls(
+            legacy_path,
+            results_dir / "manual_validation_results.csv",
+            results_dir / "manual_validation_summary.json",
+            engine=engine,
+        )
+
+    if holdout_path.exists():
+        outputs["independent_holdout"] = evaluate_urls(
+            holdout_path,
+            results_dir / "manual_holdout_results.csv",
+            results_dir / "manual_holdout_summary.json",
+            engine=engine,
+        )
+
+    print(json.dumps(outputs, indent=2))
 
 
 if __name__ == "__main__":

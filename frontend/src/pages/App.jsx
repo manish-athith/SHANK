@@ -6,6 +6,7 @@ import { AlertTable } from '../components/AlertTable.jsx';
 import { DetectionForm } from '../components/DetectionForm.jsx';
 import { MetricTile } from '../components/MetricTile.jsx';
 import { fetchAlerts, fetchStats, login } from '../lib/api.js';
+import { normalizeBackendTimestamp } from '../lib/datetime.js';
 import { useLiveAlerts } from '../lib/useLiveAlerts.js';
 
 export default function App() {
@@ -23,7 +24,9 @@ export default function App() {
   const alerts = useMemo(() => {
     const byId = new Map();
     [...live.events, ...(alertsQuery.data || [])].forEach((alert) => byId.set(alert.id, alert));
-    return Array.from(byId.values()).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return Array.from(byId.values()).sort(
+      (a, b) => normalizeBackendTimestamp(b.created_at) - normalizeBackendTimestamp(a.created_at)
+    );
   }, [alertsQuery.data, live.events]);
 
   const severityData = Object.entries(statsQuery.data?.severity || {}).map(([severity, count]) => ({

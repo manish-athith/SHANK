@@ -19,11 +19,17 @@ class ProbabilityCalibratedModel:
         self.calibrator = calibrator
         self.method = method
         self.calibration_feature_columns = calibration_feature_columns or []
+        self.probability_floor = 0.015
+        self.probability_ceiling = 0.985
 
     def predict_proba(self, rows: Any) -> np.ndarray:
         matrix = self._calibration_matrix(rows)
         calibrated = self.calibrator.predict_proba(matrix)[:, 1]
-        calibrated = np.clip(calibrated, 0.0, 1.0)
+        calibrated = np.clip(
+            calibrated,
+            getattr(self, "probability_floor", 0.015),
+            getattr(self, "probability_ceiling", 0.985),
+        )
         return np.column_stack([1.0 - calibrated, calibrated])
 
     def predict(self, rows: Any) -> np.ndarray:
