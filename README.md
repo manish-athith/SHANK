@@ -1,31 +1,239 @@
 # SHANK
 
-Real-time AI-powered phishing detection and cybersecurity intelligence platform.
+## Real-Time AI-Powered Phishing Detection & Cybersecurity Intelligence Platform
 
-SHANK ingests security events through Kafka and API endpoints, extracts URL/email indicators, scores events with an XGBoost phishing classifier plus Isolation Forest anomaly model, stores forensic records in PostgreSQL, emits alerts through WebSockets, and displays SOC operations views in React.
+SHANK is a Dockerized cybersecurity platform for real-time phishing URL detection, threat scoring, forensic storage, and SOC-style alert monitoring.
+
+It ingests URL/security events through APIs and Kafka, extracts runtime-safe URL features, scores threats using a calibrated XGBoost classifier and Isolation Forest anomaly detector, stores events in PostgreSQL, streams alerts through WebSockets, and displays results in a React dashboard.
+
+> SHANK is built as a serious local-deployable cybersecurity project, not a toy demo.  
+> It is suitable for portfolio, resume, final-year project, and research-style extension.
+
+---
+
+## Screenshots
+
+### Dashboard Overview
+
+> Add screenshot here.
+
+```text
+docs/screenshots/dashboard-overview.png
+```
+
+### URL Threat Analysis
+
+> Add screenshot here.
+
+```text
+docs/screenshots/url-threat-analysis.png
+```
+
+### Alerts & Monitoring
+
+> Add screenshot here.
+
+```text
+docs/screenshots/alerts-monitoring.png
+```
+
+---
+
+## What SHANK Does
+
+SHANK helps detect and monitor suspicious URLs in a local security operations workflow.
+
+It can:
+
+- Accept URL submissions through REST APIs.
+- Consume security events through Kafka.
+- Extract URL-based features without visiting unsafe websites.
+- Predict phishing risk using machine learning.
+- Detect unusual patterns with anomaly detection.
+- Store predictions, events, and alerts in PostgreSQL.
+- Stream live alerts to the dashboard through WebSockets.
+- Provide authenticated dashboard access using JWT tokens.
+- Expose API documentation through FastAPI Swagger UI.
+- Run locally through Docker Compose.
+
+---
+
+## Why This Project Matters
+
+Phishing remains one of the most common attack paths in cybersecurity. SHANK demonstrates how a real-world detection platform can combine backend engineering, machine learning, streaming systems, authentication, databases, and frontend monitoring into one deployable system.
+
+This project is designed to show practical engineering ability across:
+
+- Cybersecurity threat detection
+- Machine learning model integration
+- Backend API development
+- Streaming event pipelines
+- Database-backed forensic storage
+- Dockerized deployment
+- React dashboard development
+- Authentication and protected APIs
+- Testable, extensible system design
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+| --- | --- |
+| Frontend | React, Vite, Tailwind CSS, Recharts |
+| Backend API | FastAPI, Python |
+| Authentication | JWT |
+| Machine Learning | XGBoost, Isolation Forest, scikit-learn |
+| Database | PostgreSQL |
+| Streaming | Apache Kafka |
+| Monitoring | Prometheus |
+| Deployment | Docker Compose |
+| Testing | pytest, frontend production build |
+
+---
+
+## System Architecture
+
+```text
+User / API Client
+      |
+      v
+React Dashboard  <---- WebSocket Alerts ---- FastAPI Backend
+      |                                      |
+      |                                      v
+      |                              PostgreSQL Storage
+      |                                      ^
+      |                                      |
+      v                                      |
+REST API Requests                    Stream Processor
+                                             ^
+                                             |
+                                      Kafka Event Topics
+                                             ^
+                                             |
+                                  Sample / External Events
+```
+
+High-level flow:
+
+1. A user logs in to the dashboard and receives a JWT.
+2. URLs or security events are submitted through the API or Kafka.
+3. SHANK extracts safe URL features.
+4. The ML pipeline scores phishing probability and anomaly risk.
+5. Results are stored in PostgreSQL.
+6. High-risk results generate alerts.
+7. Alerts are streamed live to authenticated dashboard users.
+
+---
+
+## Key Features
+
+### Real-Time Phishing Detection
+
+SHANK analyzes submitted URLs and returns a risk score, severity level, confidence score, and phishing probability.
+
+### Machine Learning Scoring
+
+The detection layer combines:
+
+- XGBoost classifier for phishing prediction
+- Isolation Forest for anomaly detection
+- Runtime-safe URL feature extraction
+- Calibration guardrails for more stable local testing
+
+### SOC-Style Dashboard
+
+The React dashboard provides:
+
+- Live connection state
+- Event and alert counts
+- Severity metrics
+- Recent alert table
+- URL scan form
+- Visual severity trend chart
+- Authenticated access
+- Logout support
+
+### Kafka Event Pipeline
+
+SHANK can consume raw security events from Kafka, process them, persist results, and emit alerts for downstream consumers.
+
+### Forensic Storage
+
+PostgreSQL stores events, predictions, and alerts so detections can be reviewed later instead of disappearing after runtime.
+
+### Dockerized Local Deployment
+
+The project is designed to run locally with Docker Compose, making it easier to demonstrate and reproduce.
+
+---
 
 ## Quick Start
 
+### 1. Clone the Repository
+
+```powershell
+git clone https://github.com/manish-athith/SHANK.git
+cd SHANK
+```
+
+### 2. Create Environment File
+
 ```powershell
 copy .env.example .env
+```
+
+Before using SHANK outside local development, update secrets such as:
+
+- `SECRET_KEY`
+- `SHANK_ADMIN_PASSWORD`
+- Database credentials
+- Any production deployment credentials
+
+### 3. Start the Platform
+
+```powershell
 docker compose up --build
+```
+
+### 4. Seed the Local Admin User
+
+```powershell
 docker compose exec backend python /app/scripts/seed_admin.py
 ```
 
-Open:
+### 5. Open the Services
 
-- API docs: http://localhost:8000/docs
-- Dashboard: http://localhost:5173
-- Prometheus: http://localhost:9090
+| Service | URL |
+| --- | --- |
+| Dashboard | http://localhost:5173 |
+| API Docs | http://localhost:8000/docs |
+| Prometheus | http://localhost:9090 |
 
-Default local admin created by the seed script:
+Default local admin:
 
-- Email: `admin@shank.local`
-- Password: `ChangeMe123!`
+```text
+Email: admin@shank.local
+Password: ChangeMe123!
+```
 
-Change `SECRET_KEY`, `SHANK_ADMIN_PASSWORD`, and any production credentials before exposing SHANK outside your workstation.
+> Change the default password before exposing SHANK beyond your workstation.
 
-## Smoke Test
+---
+
+## Using the Dashboard
+
+1. Open `http://localhost:5173`.
+2. Log in with the seeded admin account.
+3. Submit a suspicious or benign URL in the analysis form.
+4. Review risk score, severity, confidence, and phishing probability.
+5. Watch the alert table and metrics update as new events are processed.
+
+---
+
+## API Smoke Test
+
+You can test the protected API from PowerShell:
 
 ```powershell
 $login = Invoke-RestMethod -Method Post -Uri "http://localhost:8000/api/v1/auth/login" -ContentType "application/x-www-form-urlencoded" -Body "username=admin@shank.local&password=ChangeMe123!"
@@ -34,69 +242,63 @@ $body = @{ url = "http://secure-login-paypa1.example.info/update-billing"; sourc
 Invoke-RestMethod -Method Post -Uri "http://localhost:8000/api/v1/predict-url" -Headers $headers -ContentType "application/json" -Body $body
 ```
 
-Produce live Kafka events:
+---
+
+## Kafka Event Demo
+
+Produce sample live events:
 
 ```powershell
 docker compose exec backend python /app/scripts/produce_sample_events.py
 ```
 
-The stream processor consumes `shank.raw.events`, writes predictions, creates alerts above threshold, publishes alert events to `shank.alerts`, and the backend fanout consumer pushes those alerts to authenticated dashboard WebSocket clients.
+The stream processor consumes raw events, scores them, stores predictions, creates alerts above the configured threshold, and sends live alerts to authenticated dashboard clients.
 
-## Train Models
+---
 
-The app runs with a deterministic fallback if model files are absent. To create local model files:
+## Training Models
+
+SHANK can run with deterministic fallback behavior if trained model files are not present. For stronger local results, train model artifacts with a larger phishing URL dataset.
+
+Local training example:
 
 ```powershell
 $env:PYTHONPATH="$PWD\backend;$PWD"
 .\scripts\train_models.ps1
 ```
 
-The included `datasets/phishing_urls_seed.csv` file has only 20 rows and is smoke-test-only. For meaningful local metrics, train with the PhiUSIIL URL dataset:
+PhiUSIIL training example:
 
 ```powershell
 py -3.11 -m ml.training.train --dataset datasets/phiusiil_phishing_urls.csv --model-dir ml/models --metrics ml/models/metrics.json
 ```
 
-Or inside Docker:
+Docker training example:
 
 ```powershell
 docker compose exec backend python -m ml.training.train --dataset datasets/phiusiil_phishing_urls.csv --model-dir ml/models --metrics ml/models/metrics.json
 docker compose restart backend stream-processor
 ```
 
-PhiUSIIL uses `URL` as the input URL column and `label` as the source label. SHANK converts PhiUSIIL labels so source `label = 0` becomes phishing target `1`, and source `label = 1` becomes benign target `0`. This preserves `/api/v1/predict-url` semantics: higher `phishing_probability` means higher phishing risk. Training intentionally ignores PhiUSIIL precomputed feature columns and regenerates SHANK runtime features from each URL.
+After training, review:
 
-After training, inspect `ml/models/metrics.json` for accuracy, precision, recall, F1, ROC-AUC, confusion matrix, false positives, false negatives, the feature list, dataset metadata, and any quality warnings. Treat unusually perfect metrics as a prompt to review data leakage or duplicate URLs, not as an automatic production claim.
-
-Run the manual validation sets after training:
-
-```powershell
-py -3.11 scripts/evaluate_manual_urls.py
+```text
+ml/models/metrics.json
 ```
 
-This writes:
+This file includes model metrics, confusion matrix details, dataset metadata, feature information, and quality warnings.
 
-- `ml/models/manual_validation_results.csv` and `manual_validation_summary.json` for the calibration guardrail set.
-- `ml/models/manual_holdout_results.csv` and `manual_holdout_summary.json` for the independent holdout set.
+> Model metrics are useful for local validation, but they are not a production security guarantee.
 
-Training metrics measure the PhiUSIIL train/test split. The calibration guardrail helps reduce obvious real-world URL false positives. The independent holdout is the closest local regression check for real-world benign URLs and synthetic impersonation URLs that were not used for calibration. SHANK is still URL-feature-only; these artifacts are demo/research artifacts and are not production proof.
-
-The dashboard renders backend timestamps in browser-local time. Older backend timestamps that omit a timezone are treated as UTC before display.
-
-You can still download external feeds for experimentation:
-
-```powershell
-$env:PYTHONPATH="$PWD\backend;$PWD"
-python scripts/download_feeds.py
-python -m ml.training.train --dataset datasets/phishing_urls_training.csv --model-dir ml/models --metrics ml/models/metrics.json
-python scripts/ingest_threat_feeds.py
-```
+---
 
 ## Pretrained Model Artifacts
 
 Pretrained SHANK model artifacts are available in the GitHub release:
 
+```text
 https://github.com/manish-athith/SHANK/releases/tag/models-phiusiil-v1
+```
 
 Download these files into `ml/models/` if you want to run SHANK without retraining:
 
@@ -105,24 +307,104 @@ Download these files into `ml/models/` if you want to run SHANK without retraini
 - `metrics.json`
 - `manual_validation_summary.json`
 
-These artifacts are trained on runtime-compatible URL features using the PhiUSIIL dataset and calibrated with a small manual validation guardrail set. They are intended for local demo and research validation, not production security guarantees.
+These artifacts are intended for local demo, portfolio, and research validation.
 
-## API
+---
 
-Authenticate with `/api/v1/auth/login`, then call:
+## API Endpoints
 
-- `POST /api/v1/detect`
-- `POST /api/v1/predict-url`
-- `POST /api/v1/threat-check`
-- `GET /api/v1/alerts`
-- `GET /api/v1/alerts/live`
-- `GET /api/v1/stats`
-- `GET /api/v1/health`
+Authenticate first:
 
-## Tests
+```text
+POST /api/v1/auth/login
+```
+
+Protected and utility endpoints include:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/detect` | Submit detection request |
+| `POST` | `/api/v1/predict-url` | Score a URL |
+| `POST` | `/api/v1/threat-check` | Run a threat check |
+| `GET` | `/api/v1/alerts` | List alerts |
+| `GET` | `/api/v1/alerts/live` | Live alert WebSocket |
+| `GET` | `/api/v1/stats` | Dashboard statistics |
+| `GET` | `/api/v1/health` | Service health |
+
+---
+
+## Testing
+
+Backend tests:
 
 ```powershell
-$env:PYTHONPATH="$PWD\backend;$PWD"
-pytest
+py -3.11 -m pytest -q
+```
+
+Frontend production build:
+
+```powershell
 npm --prefix frontend run build
 ```
+
+---
+
+## Project Structure
+
+```text
+SHANK/
+├── backend/        FastAPI application and backend services
+├── frontend/       React dashboard
+├── ml/             ML training and model artifacts
+├── kafka/          Kafka-related configuration
+├── monitoring/     Prometheus monitoring configuration
+├── scripts/        Utility, training, and demo scripts
+├── datasets/       Local datasets and training inputs
+├── docs/           Documentation and screenshot placeholders
+└── docker-compose.yml
+```
+
+---
+
+## Security Notes
+
+- SHANK uses JWT authentication for protected dashboard and API access.
+- Do not expose default credentials publicly.
+- Rotate `SECRET_KEY` before any non-local deployment.
+- Treat local model outputs as decision-support signals, not final security verdicts.
+- Do not submit sensitive real user data to a local demo environment unless you understand the storage and retention behavior.
+
+---
+
+## Resume Highlights
+
+SHANK demonstrates:
+
+- End-to-end cybersecurity product engineering
+- ML-backed phishing risk scoring
+- Secure authenticated API design
+- Event-driven architecture with Kafka
+- Live dashboard updates through WebSockets
+- PostgreSQL-backed forensic storage
+- Dockerized multi-service deployment
+- Practical testing and validation workflow
+
+---
+
+## Future Improvements
+
+Potential extensions:
+
+- Add richer threat intelligence feed ingestion
+- Add analyst workflow actions for alerts
+- Add role-based access control
+- Add downloadable reports
+- Add model drift monitoring
+- Add email and domain reputation enrichment
+- Add CI/CD deployment workflow
+
+---
+
+## License
+
+Add your project license here.
