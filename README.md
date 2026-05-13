@@ -1,4 +1,4 @@
-# SHANK
+<img width="1795" height="918" alt="image" src="https://github.com/user-attachments/assets/c716b991-ef6d-461b-a596-813bb7baa1a4" /># SHANK
 
 ## Real-Time AI-Powered Phishing Detection & Cybersecurity Intelligence Platform
 
@@ -15,7 +15,8 @@ It ingests URL/security events through APIs and Kafka, extracts runtime-safe URL
 
 ### Dashboard Overview
 
-> Add screenshot here.
+<img width="1883" height="913" alt="image" src="https://github.com/user-attachments/assets/2856b43d-1cbd-43d0-8162-b039b09a8681" />
+
 
 ```text
 docs/screenshots/dashboard-overview.png
@@ -23,7 +24,11 @@ docs/screenshots/dashboard-overview.png
 
 ### URL Threat Analysis
 
-> Add screenshot here.
+<img width="1753" height="721" alt="image" src="https://github.com/user-attachments/assets/f66b6885-5c10-47e8-a4cc-49e3e73375f7" />
+
+<img width="1795" height="918" alt="image" src="https://github.com/user-attachments/assets/60e4ca51-0a06-4fd3-b34c-faae1bafcd67" />
+
+
 
 ```text
 docs/screenshots/url-threat-analysis.png
@@ -31,7 +36,8 @@ docs/screenshots/url-threat-analysis.png
 
 ### Alerts & Monitoring
 
-> Add screenshot here.
+<img width="1704" height="891" alt="image" src="https://github.com/user-attachments/assets/52f70720-6714-4de2-94ba-9218003340bd" />
+
 
 ```text
 docs/screenshots/alerts-monitoring.png
