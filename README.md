@@ -39,6 +39,9 @@ docs/screenshots/url-threat-analysis.png
 <img width="1704" height="891" alt="image" src="https://github.com/user-attachments/assets/52f70720-6714-4de2-94ba-9218003340bd" />
 
 
+> Note: The Recent Alerts table shows only detections that cross the alert threshold and create an alert, usually high or critical risk events. Low-risk or benign scans appear in the latest scan result but may not appear in Recent Alerts.
+
+
 ```text
 docs/screenshots/alerts-monitoring.png
 ```
@@ -410,6 +413,10 @@ Potential extensions:
 - Add CI/CD deployment workflow
 
 ---
+## Contributors
+
+- Manish Choudhary 
+- Pratyush Kumar Singh
 
 ## License
 
