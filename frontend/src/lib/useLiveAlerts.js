@@ -1,4 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
+import { notifyAuthInvalid } from './auth.js';
+
+const AUTH_CLOSE_CODES = new Set([1008, 4001, 4401, 4403]);
+
+function isAuthClose(event, opened) {
+  const reason = event.reason?.toLowerCase() || '';
+  return (
+    AUTH_CLOSE_CODES.has(event.code) ||
+    reason.includes('auth') ||
+    reason.includes('token') ||
+    reason.includes('unauthorized') ||
+    reason.includes('forbidden') ||
+    (!opened && event.code === 1006)
+  );
+}
 
 export function useLiveAlerts(token) {
   const [events, setEvents] = useState([]);
@@ -15,11 +30,21 @@ export function useLiveAlerts(token) {
   useEffect(() => {
     if (!token) {
       setConnected(false);
+      setEvents([]);
       return undefined;
     }
+    let opened = false;
     const socket = new WebSocket(wsUrl);
-    socket.onopen = () => setConnected(true);
-    socket.onclose = () => setConnected(false);
+    socket.onopen = () => {
+      opened = true;
+      setConnected(true);
+    };
+    socket.onclose = (event) => {
+      setConnected(false);
+      if (isAuthClose(event, opened)) {
+        notifyAuthInvalid();
+      }
+    };
     socket.onmessage = (message) => {
       const payload = JSON.parse(message.data);
       if (payload.type === 'alert' && payload.alert) {
